@@ -31,4 +31,9 @@ class Task extends Model
     {
         return $query->where('completed', '=', Task::COMPLETED_NO);
     }
+
+    public function isCompleted(): bool
+    {
+        return $this->completed === self::COMPLETED_YES;
+    }
 }

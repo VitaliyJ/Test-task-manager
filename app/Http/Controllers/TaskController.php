@@ -7,6 +7,7 @@ use App\Models\Task;
 use App\Services\TaskServices\TaskService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 use Symfony\Component\HttpFoundation\Response;
 use Exception;
 
@@ -75,11 +76,33 @@ class TaskController extends Controller
      */
     public function destroy(Task $task): Response
     {
-        return response()->json(["success" => (bool)$task->delete()]);
+        try {
+            $deleted = $this->taskService->delete($task);
+            $response = collect(['success' => $deleted]);
+        } catch (Exception $e) {
+            return APIResponseHelper::getFailedResponse($e->getMessage(), 400);
+        }
+
+        return APIResponseHelper::getSuccessResponse($response);
     }
 
     public function markComplete(Request $request, Task $task): Response
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'completed' => ['required', 'integer', Rule::in([Task::COMPLETED_NO, Task::COMPLETED_YES]),]
+        ]);
+
+        if ($validator->fails()) {
+            return APIResponseHelper::getFailedResponse($validator->errors()->getMessages(), 400);
+        }
+
+        try {
+            $task->completed = (int)$request->input('completed');
+            $task->save();
+        } catch (Exception $e) {
+            return APIResponseHelper::getFailedResponse($e->getMessage(), 500);
+        }
+
+        return APIResponseHelper::getSuccessResponse($task);
     }
 }

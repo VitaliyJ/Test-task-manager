@@ -2,8 +2,10 @@
 
 namespace App\Services\TaskServices;
 
+use App\Exceptions\ForbiddenException;
 use App\Exceptions\RecordFailedException;
 use App\Models\Task;
+use Exception;
 use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -47,5 +49,20 @@ class TaskService
         }
 
         return $task;
+    }
+
+    /**
+     * @param Task $task
+     * @return bool
+     * @throws Exception
+     * @throws ForbiddenException
+     */
+    public function delete(Task $task): bool
+    {
+        if ($task->isCompleted()) {
+            return (bool)$task->delete();
+        }
+
+        throw new ForbiddenException('Task must be completed', 400);
     }
 }
