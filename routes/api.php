@@ -1,19 +1,23 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\TaskController;
+use App\Helpers\APIResponseHelper;
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| is assigned the "api" middleware group. Enjoy building your API!
-|
-*/
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+Route::match(['put', 'patch'], '/tasks/{task}/complete', [TaskController::class, 'markComplete'])
+    ->missing(function () {
+        return APIResponseHelper::getFailedResponse('Record not found', 404);
+    });
+
+Route::apiResource('tasks', TaskController::class)
+    ->except([
+        'show',
+    ])
+    ->missing(function () {
+        return APIResponseHelper::getFailedResponse('Record not found', 404);
+    });
+
+Route::fallback(function () {
+    return APIResponseHelper::getFailedResponse('Method not found. Read API documentation.', 404);
 });
