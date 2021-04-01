@@ -69,11 +69,6 @@ class TaskController extends Controller
         return APIResponseHelper::getSuccessResponse($task);
     }
 
-    /**
-     * @param Task $task
-     * @return Response
-     * @throws Exception
-     */
     public function destroy(Task $task): Response
     {
         try {
