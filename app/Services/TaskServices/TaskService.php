@@ -36,7 +36,7 @@ class TaskService
     }
 
     /**
-     * @return Collection
+     * @return Task
      * @throws RecordFailedException
      */
     public function add(): Task
@@ -52,7 +52,7 @@ class TaskService
     }
 
     /**
-     * @param Task $task
+     * @param  Task $task
      * @return bool
      * @throws Exception
      * @throws ForbiddenException
