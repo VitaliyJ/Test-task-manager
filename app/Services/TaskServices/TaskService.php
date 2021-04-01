@@ -43,6 +43,7 @@ class TaskService
     {
         $task = new Task;
         $task->name = $this->name;
+        $task->completed = Task::COMPLETED_NO;
 
         if (!$task->save()) {
             throw new RecordFailedException();
